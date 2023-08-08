@@ -1,7 +1,7 @@
-const { app, BrowserWindow, ipcMain, remote } = require('electron')
+const { app, BrowserWindow, ipcMain, dialog } = require('electron')
 const chorme = require("./brower")
 const path = require('path')
-const { download } = require("electron-dl");
+const fs = require("fs")
 
 var win
 
@@ -35,6 +35,9 @@ const authen = async (event, username, password) => {
         console.log("Login successfully")
         createWindow("src/index2.html")
     }
+    else {
+        win.webContents.send("export", "Signing failed")
+    }
 }
 
 const crawl = async (event, startdate, enddate) => {
@@ -50,14 +53,31 @@ const crawl = async (event, startdate, enddate) => {
         }).join(',')
     ));
     dictValuesAsCsv.unshift(keys.join(","))
-    try {
-        await download(win, `data:text/csv;charset=utf-8,${encodeURIComponent(dictValuesAsCsv.join("\n"))}`, {
-            filename: pathFile
-        })
-    } catch (error) {
-        console.log(error)
-    }
-    win.webContents.send("export", `Done. Check file ${pathFile} in folder Dowloads`)
+
+    dialog.showSaveDialog({
+        title: 'Select the File Path to save',
+        defaultPath: path.join(pathFile),
+        buttonLabel: 'Save',
+        filters: [
+            {
+                name: 'Text Files',
+                extensions: ['txt', 'docx']
+            }, ],
+        properties: []
+    }).then(file => {
+        console.log(file.canceled);
+        if (!file.canceled) {
+            console.log(file.filePath.toString());
+            fs.writeFile(file.filePath.toString(), 
+                        dictValuesAsCsv.join("\n"), function (err) {
+                if (err) throw err;
+                console.log('Saved!');
+            });
+            win.webContents.send("export", "Done")
+        }
+    }).catch(err => {
+        console.log(err)
+    });
 }
 
   
