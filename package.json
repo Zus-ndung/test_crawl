@@ -1,0 +1,31 @@
+{
+  "name": "crawl_leader",
+  "version": "1.0.0",
+  "description": "app crawling data",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron .",
+    "build": "electron-builder",
+    "build-mac": "electron-builder -m"
+  },
+  "author": "dunghedspi",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^25.4.0",
+    "electron-builder": "^24.6.3"
+  },
+  "dependencies": {
+    "electron-dl": "^3.5.0",
+    "electron-squirrel-startup": "^1.0.0",
+    "selenium-webdriver": "^4.11.1"
+  },
+  "build": {
+    "appId": "com.electron.crawl",
+    "asar": false,
+    "mac": {
+      "category": "your.app.crawl.developer-tools",
+      "target": "dmg"
+    }
+  }
+}
